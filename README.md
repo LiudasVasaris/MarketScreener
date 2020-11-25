@@ -1,2 +1,3 @@
 # MarketScreener
-Stock screener and evaluator for different "common" trading strategies
+
+Stock screener and evaluator for different 'common' trading strategies
