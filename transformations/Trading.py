@@ -4,18 +4,19 @@ Created on Fri Nov  6 19:48:38 2020
 
 @author: juliu
 """
+import datetime
+import re
+from time import sleep
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import ta
 import yfinance as yf
 from plotly.offline import plot
 
 pd.options.mode.chained_assignment = None  # default='warn'
-import ta
-import datetime
-import re
-from time import sleep
 
 watchlist = ["aal", "aapl", "ba", "googl", "intc", "msft", "nflx", "pfe", "tsla"]
 
@@ -111,7 +112,7 @@ class Stock:
 
 
 def plot_compare_stocks(
-        stocks=[], strategy=bollinger_bands, date_from=None, date_to=None, period=365
+    stocks=[], strategy=bollinger_bands, date_from=None, date_to=None, period=365
 ):
     list_of_comparisons = []
 
@@ -158,7 +159,7 @@ def plot_compare_stocks(
 
 
 def plot_strategy(
-        data, strategy_indicator="bb_bbli", price="Close", name="Price", date_from=None
+    data, strategy_indicator="bb_bbli", price="Close", name="Price", date_from=None
 ):
     df = data
     if date_from:
@@ -192,12 +193,3 @@ def plot_strategy(
 #                         mode='markers', name='markers'))
 #     plot(fig, auto_open=True)
 # =============================================================================
-
-
-stock_list = [Stock(stk) for stk in watchlist]
-plot_compare_stocks(
-    stock_list, date_from="2005-01-01", date_to="2009-01-01", period=365
-)
-
-# for stock in stock_list:
-#     plot_strategy(bollinger_bands(stock.data), name = stock.fullname, date_from='2019-01-01')
