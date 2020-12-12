@@ -8,7 +8,7 @@ from transformations.Trading import (
     plot_strategy,
     bollinger_bands,
 )
-from utilities.helperfunctions import get_json_content
+from utilities.helper_functions import get_json_content
 from utilities.screener_logger import logger
 
 path_to_config = Path(__file__).parent.absolute() / "config/config.json"
