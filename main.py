@@ -1,4 +1,6 @@
 """To get daily updates on price fluctuation"""
+import os
+import shutil
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -13,6 +15,7 @@ from utilities.screener_logger import logger
 
 path_to_config = Path(__file__).parent.absolute() / "config/config.json"
 config = get_json_content(path_to_config)
+path_to_plots = Path(__file__).parent.absolute() / 'plots'
 
 
 def run_general_information():
@@ -33,6 +36,15 @@ def run_general_information():
         )
     logger.info("Gather information ended")
 
+def clean_up():
+    logger.info("Cleanup started")
+    for filename in os.listdir(path_to_plots):
+        filepath = os.path.join(path_to_plots, filename)
+        try:
+            shutil.rmtree(filepath)
+        except OSError:
+            os.remove(filepath)
+    logger.info("Cleanup finished")
 
 if __name__ == "__main__":
     run_general_information()
