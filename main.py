@@ -48,3 +48,4 @@ def clean_up():
 
 if __name__ == "__main__":
     run_general_information()
+    clean_up()
