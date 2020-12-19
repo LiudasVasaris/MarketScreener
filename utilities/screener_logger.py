@@ -7,8 +7,8 @@ logger.setLevel(logging.DEBUG)
 # create console handler and set level to debug
 c_handler = logging.StreamHandler()
 f_handler = logging.FileHandler('StockScreener.log')
-c_handler.setLevel(logging.WARNING)
-f_handler.setLevel(logging.ERROR)
+c_handler.setLevel(logging.INFO)
+f_handler.setLevel(logging.INFO)
 # create formatter
 c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
