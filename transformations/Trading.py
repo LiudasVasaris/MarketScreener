@@ -35,7 +35,7 @@ def return_on_hold(data: pd.DataFrame, price: str = "Close", period: int = 365):
         price_cur = df[price][i]
         year_time = i + datetime.timedelta(days=period)
         try:
-            closest_approx = max(filter(lambda x : x <= year_time , df.index))
+            closest_approx = max(filter(lambda x: x <= year_time, df.index))
             price_year = df[price][closest_approx]
             return_dict[i] = price_year / price_cur
         except:
@@ -57,7 +57,7 @@ def return_on_strategy(data, price="Close", strategy_indicator="bb_bbli", period
         price_cur = df[price][i]
         year_time = i + datetime.timedelta(days=period)
         try:
-            closest_aprox = max(filter(lambda x : x <= year_time , df.index))
+            closest_aprox = max(filter(lambda x: x <= year_time, df.index))
             price_year = df[price][closest_aprox]
             return_dict[i] = price_year / price_cur
         except:
@@ -91,25 +91,35 @@ def localize_time(data):
 
 
 class Stock:
-    def __init__(self, name, interval="1d"):
+    def __init__(self, name, interval="1d", period=None):
         self.name = name
         self.interval = interval
         self.ticker = yf.Ticker(name)
         self.fullname = self.ticker.info["shortName"]
-        self.data = self.update_data()
+        self.data = self.update_data(period)
 
-    def update_data(self):
+    def update_data(self, period):
+
         self.ticker = yf.Ticker(self.name)
-        if re.sub(r"\d+", "", self.interval) == "m":
-            _period = "2y"
+        if "60m" in self.interval:
+            period_ = "2y"
+        elif "m" in self.interval:
+            period_ = "60d"
         else:
-            _period = "max"
-        data_ny_tz = self.ticker.history(interval=self.interval, period=_period)
+            period_ = "max"
+
+        period_ = period or period_
+        data_ny_tz = self.ticker.history(interval=self.interval, period=period_)
         try:
             data_lt_tz = localize_time(data_ny_tz)
         except TypeError:
             data_lt_tz = data_ny_tz
         return data_lt_tz
+
+    def get_current_price(self):
+        current_price = self.ticker.history(interval='1m', period='1d').iloc[-1]
+        return current_price
+
 
 
 def plot_compare_stocks(
@@ -174,15 +184,48 @@ def plot_compare_stocks(
 
 
 def plot_strategy(
-    data, strategy_indicator="bb_bbli", price="Close", name="Err", date_from=None
+    stock, strategy = bollinger_bands, strategy_indicator="bb_bbli", price="Close", date_from=None
 ):
-    df = data
+    """https://developer.mozilla.org/en-US/docs/Web/CSS/color_value colors for plotly"""
+
+    df = strategy(stock.data)
     if date_from:
         df = df[date_from:]
+
+    cur_price = [None] * (len(df) -1) + [stock.get_current_price()[price]]
+
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df.index, y=df[price], mode="lines", name=name))
-    fig.add_trace(go.Scatter(x=df.index, y=df["bb_low"], mode="lines", name='bb_low'))
-    fig.add_trace(go.Scatter(x=df.index, y=df["bb_high"], mode="lines", name='bb_high'))
+    fig.add_trace(
+        go.Scatter(
+            x=df.index, y=df[price], mode="lines", name=stock.fullname, line=dict(color="blue")
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=cur_price,
+            mode="markers",
+            name="Current price",
+            marker=dict(color="red", size = 8),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df["bb_low"],
+            mode="lines",
+            name="bb_low",
+            line=dict(color="chocolate"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df["bb_high"],
+            mode="lines",
+            name="bb_high",
+        )
+    )
 
     fig.add_trace(
         go.Scatter(
@@ -190,14 +233,15 @@ def plot_strategy(
             y=df[price] * df[strategy_indicator].replace(0, np.nan),
             mode="markers",
             name="Strategy Buy",
+            marker=dict(color="lime", size = 8),
         )
     )
-    fig.update_layout(title=f"Prices of {name}")
+    fig.update_layout(title=f"Prices of {stock.fullname}")
     time_of_completion = datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")
     plot_path = str(
         Path(__file__).parent.parent
         / "plots"
-        / f"plot_{name}_{time_of_completion}.html"
+        / f"plot_{stock.name}_{time_of_completion}.html"
     )
 
     plot(fig, filename=plot_path, auto_open=True)
@@ -205,10 +249,6 @@ def plot_strategy(
     return plot_path
 
 
-def signal_checker(stock, strategy = bollinger_bands, price="Close", name="Err"):
-    df = stock.data
-
-    pass
 
 
 # =============================================================================
