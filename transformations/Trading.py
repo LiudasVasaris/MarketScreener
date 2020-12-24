@@ -35,7 +35,7 @@ def return_on_hold(data: pd.DataFrame, price: str = "Close", period: int = 365):
         price_cur = df[price][i]
         year_time = i + datetime.timedelta(days=period)
         try:
-            closest_approx = min([i for i in df.index if i >= year_time])
+            closest_approx = max(filter(lambda x : x <= year_time , df.index))
             price_year = df[price][closest_approx]
             return_dict[i] = price_year / price_cur
         except:
@@ -57,7 +57,7 @@ def return_on_strategy(data, price="Close", strategy_indicator="bb_bbli", period
         price_cur = df[price][i]
         year_time = i + datetime.timedelta(days=period)
         try:
-            closest_aprox = min([i for i in df.index if i >= year_time])
+            closest_aprox = max(filter(lambda x : x <= year_time , df.index))
             price_year = df[price][closest_aprox]
             return_dict[i] = price_year / price_cur
         except:
@@ -205,7 +205,7 @@ def plot_strategy(
     return plot_path
 
 
-def signal_checker(stock, strategy_indicator="bb_bbli", price="Close", name="Err"):
+def signal_checker(stock, strategy = bollinger_bands, price="Close", name="Err"):
     df = stock.data
 
     pass
