@@ -17,7 +17,10 @@ import yfinance as yf
 from plotly.offline import plot
 from ta.volatility import BollingerBands
 
+from utilities.screener_logger import logger
+
 pd.options.mode.chained_assignment = None  # default='warn'
+
 
 def return_on_hold(data: pd.DataFrame, price: str = "Close", period: int = 365):
     df = data
@@ -66,7 +69,7 @@ def return_on_strategy(data, price="Close", strategy_indicator="bb_bbli", period
 def bollinger_bands(data, days=20, std=2, price="Close"):
     df = data
     # Initialize Bollinger Bands Indicator
-    indicator_bb = BollingerBands(close=df[price], window=days,window_dev=std)
+    indicator_bb = BollingerBands(close=df[price], window=days, window_dev=std)
     # Add Bollinger Bands features
     df["bb_ma"] = indicator_bb.bollinger_mavg()
     df["bb_high"] = indicator_bb.bollinger_hband()
@@ -110,13 +113,14 @@ class Stock:
 
 
 def plot_compare_stocks(
-        stocks=None, strategy=bollinger_bands, date_from=None, date_to=None, period=365
+    stocks=None, strategy=bollinger_bands, date_from=None, date_to=None, period=365
 ):
     if stocks is None:
         stocks = []
     list_of_comparisons = []
 
     for stock in stocks:
+        logger.info(f"adding {stock.fullname} to comparison")
         data = stock.data
         strategy_data = strategy(data)
 
@@ -124,8 +128,8 @@ def plot_compare_stocks(
             strategy_data = strategy_data[date_from:]
             data = data[date_from:]
         if date_to:
-            strategy_data = strategy(stock.data)[:date_to]
-            data = stock.data[:date_to]
+            strategy_data = strategy_data[:date_to]
+            data = data[:date_to]
 
         dict_hold = return_on_hold(data, period=period)
         dict_str = return_on_strategy(strategy_data, period=period)
@@ -153,15 +157,20 @@ def plot_compare_stocks(
     fig = px.box(df_compare, x="Stock", y="ROI", color="Type")
     x_axis = df_compare["Stock"].unique()
     fig.add_trace(
-        go.Scatter(x=x_axis, y=[1] * len(x_axis), mode="lines+markers", name="profit line")
+        go.Scatter(
+            x=x_axis, y=[1] * len(x_axis), mode="lines+markers", name="profit line"
+        )
     )
     time_of_completion = datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")
-    plot_path = str(Path(__file__).parent.parent / "plots" / f"plot_comparison_{time_of_completion}.html")
+    plot_path = str(
+        Path(__file__).parent.parent
+        / "plots"
+        / f"plot_comparison_{time_of_completion}.html"
+    )
     plot(fig, filename=plot_path, auto_open=True)
     sleep(1)
 
     return plot_path
-
 
 
 def plot_strategy(
@@ -172,6 +181,8 @@ def plot_strategy(
         df = df[date_from:]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df.index, y=df[price], mode="lines", name=name))
+    fig.add_trace(go.Scatter(x=df.index, y=df["bb_low"], mode="lines", name='bb_low'))
+    fig.add_trace(go.Scatter(x=df.index, y=df["bb_high"], mode="lines", name='bb_high'))
 
     fig.add_trace(
         go.Scatter(
@@ -183,11 +194,21 @@ def plot_strategy(
     )
     fig.update_layout(title=f"Prices of {name}")
     time_of_completion = datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")
-    plot_path = str(Path(__file__).parent.parent / "plots" / f"plot_{name}_{time_of_completion}.html")
+    plot_path = str(
+        Path(__file__).parent.parent
+        / "plots"
+        / f"plot_{name}_{time_of_completion}.html"
+    )
 
     plot(fig, filename=plot_path, auto_open=True)
     sleep(1)
     return plot_path
+
+
+def signal_checker(stock, strategy_indicator="bb_bbli", price="Close", name="Err"):
+    df = stock.data
+
+    pass
 
 
 # =============================================================================
