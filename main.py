@@ -14,7 +14,7 @@ config = get_json_content(path_to_config)
 path_to_plots = Path(__file__).parent.absolute() / "plots"
 
 interval_default = "1d"
-
+signal_lag_default = 3
 
 def run_general_information(stock_list):
     logger.info("Gather information started")
@@ -62,7 +62,7 @@ def gather_stocks_from_watchlist(watchlist=config["watchlist"]):
 
 if __name__ == "__main__":
     stock_list = gather_stocks_from_watchlist()
-    screened_stock_list = screener(stock_list,signal_lag=10)
+    screened_stock_list = screener(stock_list,signal_lag=signal_lag_default)
     if screened_stock_list:
         run_general_information(screened_stock_list)
         clean_up()
