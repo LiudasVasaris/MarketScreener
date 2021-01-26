@@ -61,7 +61,7 @@ def plot_compare_stocks(
         x="Stock",
         y="ROI",
         color="Type",
-        title=f"Investments made from {date_from.strftime('%Y-%m-%d')} to {date_to.strftime('%Y-%m-%d')} and held for a period of {period} days",
+        title=f"Investments made from {date_from} to {date_to} and held for a period of {period} days",
     )
     x_axis = df_compare["Stock"].unique()
     fig.add_trace(
