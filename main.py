@@ -61,8 +61,10 @@ def gather_stocks_from_watchlist(watchlist=config["watchlist"]):
 
 
 if __name__ == "__main__":
+    logger.info(f"Stock screener initialized")
     stock_list = gather_stocks_from_watchlist()
     screened_stock_list = screener(stock_list,signal_lag=signal_lag_default)
     if screened_stock_list:
         run_general_information(screened_stock_list)
         clean_up()
+    logger.info(f"Stock screener finished")
