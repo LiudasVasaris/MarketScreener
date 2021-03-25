@@ -12,6 +12,8 @@ import yfinance as yf
 from pandas import DataFrame
 from ta.volatility import BollingerBands
 
+from utilities.screener_logger import logger
+
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
@@ -66,7 +68,8 @@ def return_on_hold(
     delta = df.index.max() - df.index.min()
 
     if delta.days < period:
-        raise ValueError("Contains less days than period")
+        logger.info("Contains less days than period, setting period to maximum")
+        period=delta.days
 
     return_dict = {}
 
@@ -93,7 +96,8 @@ def return_on_strategy(
     delta = df.index.max() - df.index.min()
 
     if delta.days < period:
-        raise ValueError("Contains less days than period")
+        logger.info("Contains less days than period, setting period to maximum")
+        period=delta.days
 
     return_dict = {}
 
