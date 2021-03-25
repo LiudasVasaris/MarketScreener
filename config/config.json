@@ -13,6 +13,10 @@
         "ko",
         "dis",
         "intc",
-        "shop"
+        "shop",
+		"pltr",
+		"pypl",
+		"sq",
+		"cost"
     ]
 }

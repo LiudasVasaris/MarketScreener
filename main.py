@@ -59,6 +59,11 @@ def gather_stocks_from_watchlist(watchlist=config["watchlist"]):
     logger.info(f"{[s.fullname for s in stock_list]} stock gathered as watchlist")
     return stock_list
 
+def run_for_all(watchlist=config["watchlist"]):
+    stock_list = [Stock(stk, interval=interval_default) for stk in watchlist]
+    run_general_information(stock_list)
+    clean_up()
+
 
 if __name__ == "__main__":
     logger.info(f"Stock screener initialized")
@@ -66,5 +71,5 @@ if __name__ == "__main__":
     screened_stock_list = screener(stock_list,signal_lag=signal_lag_default)
     if screened_stock_list:
         run_general_information(screened_stock_list)
-        clean_up()
+    clean_up()
     logger.info(f"Stock screener finished")
