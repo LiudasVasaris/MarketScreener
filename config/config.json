@@ -5,7 +5,7 @@
         "goog",
         "amzn",
         "nflx",
-        "fb",
+        "meta",
         "baba",
         "msft",
         "nio",
@@ -14,9 +14,10 @@
         "dis",
         "intc",
         "shop",
-		"pltr",
-		"pypl",
-		"sq",
-		"cost"
+        "pltr",
+        "pypl",
+        "sq",
+        "cost",
+        "amd"
     ]
 }

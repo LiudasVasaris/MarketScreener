@@ -2,3 +2,4 @@
 /.idea/
 StockScreener.log
 /plots/
+*.pyc
