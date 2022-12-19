@@ -28,7 +28,8 @@ class Stock:
         self.name = name
         self.interval = interval
         self.ticker = yf.Ticker(name)
-        self.fullname = self.ticker.info["shortName"]
+        # TODO: Yahoo changed info encoding, for now no real info about ticker is available
+        self.fullname = self.ticker.ticker
         self.data = self.update_data(period)
 
     def update_data(self, period):
@@ -69,7 +70,7 @@ def return_on_hold(
 
     if delta.days < period:
         logger.info("Contains less days than period, setting period to maximum")
-        period=delta.days
+        period = delta.days
 
     return_dict = {}
 
@@ -97,7 +98,7 @@ def return_on_strategy(
 
     if delta.days < period:
         logger.info("Contains less days than period, setting period to maximum")
-        period=delta.days
+        period = delta.days
 
     return_dict = {}
 
