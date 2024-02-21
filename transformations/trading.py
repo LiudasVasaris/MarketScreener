@@ -33,7 +33,6 @@ class Stock:
         self.data = self.update_data(period)
 
     def update_data(self, period):
-
         self.ticker = yf.Ticker(self.name)
         if "60m" in self.interval:
             period_ = "2y"
@@ -136,7 +135,9 @@ def bollinger_bands(
 
 
 def localize_time(data):
-    data["date_lt"] = data.index.tz_convert("Europe/Vilnius")
+    data["date_lt"] = data.index.tz_localize(
+        "Europe/Vilnius", nonexistent="shift_forward"
+    )
     data_local = data.set_index("date_lt")
     return data_local
 
